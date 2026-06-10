@@ -18,10 +18,14 @@ Install the following before cloning:
 | `go` | Go language support |
 | `java 19+` | Groovy LSP and Gradle (Temurin recommended) |
 | `lazygit` | Git UI (optional but recommended) |
+| `gcc` / `clang` | C compiler for nvim-treesitter parser compilation |
 
 **macOS (Homebrew) — install everything in one line:**
 
 ```sh
+# Xcode Command Line Tools (provides gcc/clang for treesitter parsers)
+xcode-select --install
+
 brew install neovim git ripgrep fd fzf node python go lazygit
 ```
 
