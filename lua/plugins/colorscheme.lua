@@ -1,16 +1,17 @@
 return {
   {
-    "xiantang/darcula-dark.nvim",
+    "catppuccin/nvim",
+    name = "catppuccin",
     priority = 1000,
-    config = function()
-      vim.cmd.colorscheme("darcula-dark")
-    end,
+    opts = {
+      flavour = "mocha",
+    },
   },
 
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "darcula-dark",
+      colorscheme = "catppuccin",
     },
   },
 }
