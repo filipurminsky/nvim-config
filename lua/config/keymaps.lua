@@ -17,3 +17,9 @@ vim.keymap.set("n", "<C-w>+", "<cmd>resize +5<cr>",            { desc = "Increas
 vim.keymap.set("n", "<C-w>-", "<cmd>resize -5<cr>",            { desc = "Decrease window height" })
 vim.keymap.set("n", "<C-w>>", "<cmd>vertical resize +10<cr>",  { desc = "Increase window width" })
 vim.keymap.set("n", "<C-w><", "<cmd>vertical resize -10<cr>",  { desc = "Decrease window width" })
+
+-- Fabric: filter text through the LLM (fabric_query script on PATH), replacing
+-- it in-place with the answer. In visual mode <C-u> clears the auto-inserted
+-- range so we set '<,'> explicitly.
+vim.keymap.set("n", "<leader>fq", ":.!fabric_query<CR>",            { desc = "Fabric: query current line" })
+vim.keymap.set("x", "<leader>fq", ":<C-u>'<,'>!fabric_query<CR>",   { desc = "Fabric: query selection" })
