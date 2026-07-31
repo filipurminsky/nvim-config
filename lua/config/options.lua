@@ -8,6 +8,11 @@ vim.env.JAVA_HOME = "/Users/filipurminsky/Library/Java/JavaVirtualMachines/temur
 
 vim.g.lazyvim_python_lsp = "basedpyright"
 
+-- TypeScript uses LazyVim's default vtsls server. Only run Prettier in projects
+-- that explicitly configure it, avoiding surprise formatting in repositories
+-- with another formatter.
+vim.g.lazyvim_prettier_needs_config = true
+
 if vim.g.neovide then
   vim.o.guifont = "JetBrainsMono Nerd Font:h13"
 end
