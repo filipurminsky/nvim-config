@@ -26,6 +26,12 @@ return {
         if vim.bo[buf].readonly then
           return false
         end
+        -- Only real file buffers. Plugin buffers write through their own
+        -- BufWriteCmd (buftype=acwrite): autosaving diffbandit's merge result,
+        -- for one, would `git add` a conflict you haven't resolved yet.
+        if vim.bo[buf].buftype ~= "" then
+          return false
+        end
         return true
       end,
     },
