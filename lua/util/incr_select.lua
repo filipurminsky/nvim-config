@@ -8,10 +8,41 @@ local M = {}
 
 -- Stack of selected nodes, so <BS> can walk back down.
 local stack = {}
+local context
+local selecting = false
+
+local function reset()
+  stack = {}
+  context = nil
+end
+
+local group = vim.api.nvim_create_augroup("dotfiles_incr_select", { clear = true })
+vim.api.nvim_create_autocmd({ "BufLeave", "TextChanged", "TextChangedI" }, { group = group, callback = reset })
+vim.api.nvim_create_autocmd("ModeChanged", {
+  group = group,
+  callback = function()
+    if not selecting and vim.v.event.old_mode:match("^[vV\22]") then
+      reset()
+    end
+  end,
+})
+
+local function valid_context()
+  return context
+    and context.buf == vim.api.nvim_get_current_buf()
+    and context.win == vim.api.nvim_get_current_win()
+    and context.tick == vim.api.nvim_buf_get_changedtick(0)
+    and vim.fn.mode():match("^[vV\22]")
+    and vim.deep_equal(context.anchor, vim.fn.getpos("v"))
+    and vim.deep_equal(context.cursor, vim.api.nvim_win_get_cursor(0))
+end
 
 -- Charwise-select the given node's range as a fresh visual selection.
-local function select_node(node)
+local function select_range(node)
   local srow, scol, erow, ecol = node:range()
+  if srow == erow and scol == ecol then
+    return false
+  end
 
   -- node ranges have an exclusive end column; convert to an inclusive cursor.
   if ecol > 0 then
@@ -34,6 +65,24 @@ local function select_node(node)
   else
     vim.api.nvim_win_set_cursor(0, { erow + 1, ecol })
   end
+  return true
+end
+
+local function select_node(node)
+  selecting = true
+  local ok, selected = pcall(select_range, node)
+  selecting = false
+  if not ok or not selected then
+    reset()
+    return
+  end
+  context = {
+    buf = vim.api.nvim_get_current_buf(),
+    win = vim.api.nvim_get_current_win(),
+    tick = vim.api.nvim_buf_get_changedtick(0),
+    anchor = vim.fn.getpos("v"),
+    cursor = vim.api.nvim_win_get_cursor(0),
+  }
 end
 
 -- Default <CR> behaviour, used as a fallback in special buffers.
@@ -42,6 +91,7 @@ local function fallback_cr()
 end
 
 function M.init_selection()
+  reset()
   -- Don't hijack <CR> in special buffers (help tags, quickfix, etc.).
   if vim.bo.buftype ~= "" then
     return fallback_cr()
@@ -57,6 +107,9 @@ function M.init_selection()
 end
 
 function M.node_incremental()
+  if not valid_context() then
+    return M.init_selection()
+  end
   local node = stack[#stack]
   if not node then
     return M.init_selection()
@@ -79,6 +132,9 @@ function M.node_incremental()
 end
 
 function M.node_decremental()
+  if not valid_context() then
+    return M.init_selection()
+  end
   if #stack > 1 then
     table.remove(stack)
   end

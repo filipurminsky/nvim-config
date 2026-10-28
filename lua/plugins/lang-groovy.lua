@@ -19,7 +19,14 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        groovyls = {},
+        groovyls = {
+          cmd_env = (function()
+            local home = vim.fn.expand("~/Library/Java/JavaVirtualMachines/temurin-19.0.2/Contents/Home")
+            if vim.fn.executable(home .. "/bin/java") == 1 then
+              return { JAVA_HOME = home, PATH = home .. "/bin:" .. vim.env.PATH }
+            end
+          end)(),
+        },
       },
     },
   },
