@@ -11,6 +11,20 @@ return {
           vim.list_extend(opts.cmd, { "--java-executable", home .. "/bin/java" })
         end
       end
+      opts.jdtls = function(config)
+        -- java-test ships executable/support jars alongside its OSGi bundles.
+        -- Loading those as bundles fails; recent jdtls also ships ASM itself.
+        local excluded = {
+          ["com.microsoft.java.test.runner-jar-with-dependencies.jar"] = true,
+          ["jacocoagent.jar"] = true,
+        }
+        local plugins = (vim.env.MASON or vim.fn.stdpath("data") .. "/mason") .. "/packages/jdtls/plugins/"
+        config.init_options.bundles = vim.tbl_filter(function(jar)
+          local name = vim.fs.basename(jar)
+          return not excluded[name] and vim.fn.filereadable(plugins .. name) == 0
+        end, config.init_options.bundles or {})
+        return config
+      end
     end,
   },
 }
