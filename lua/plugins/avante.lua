@@ -11,7 +11,9 @@
 return {
   {
     "yetone/avante.nvim",
-    build = "make",
+    -- "rockspec" installs avante's luarocks deps (mega.cmdparse); an explicit
+    -- build overrides lazy's automatic rockspec step, so it must be listed.
+    build = { "rockspec", "make" },
     event = "VeryLazy",
     version = false,
     dependencies = {
