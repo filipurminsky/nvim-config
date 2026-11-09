@@ -1,7 +1,8 @@
 return {
   {
-    "CoreyKaylor/diffbandit.nvim",
-    version = "*",
+    -- Local clone (was "CoreyKaylor/diffbandit.nvim" with version = "*").
+    dir = "~/git/diffbandit/diffbandit.nvim",
+    name = "diffbandit.nvim",
     cmd = {
       "DiffBandit",
       "DiffBanditBuffers",
