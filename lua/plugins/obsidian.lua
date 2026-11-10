@@ -24,7 +24,7 @@ return {
       -- deprecated `:ObsidianToday`-style commands.
       legacy_commands = false,
       picker = {
-        name = "snacks.pick",
+        name = "snacks.picker",
       },
     },
     keys = {
