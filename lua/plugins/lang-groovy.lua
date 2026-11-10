@@ -21,8 +21,14 @@ return {
       servers = {
         groovyls = {
           cmd_env = (function()
-            local home = vim.fn.expand("~/Library/Java/JavaVirtualMachines/temurin-19.0.2/Contents/Home")
-            if vim.fn.executable(home .. "/bin/java") == 1 then
+            -- Any installed JDK 19 (brew cask temurin@19 or an IntelliJ download).
+            -- java_home is macOS-only; -F makes it fail rather than fall back.
+            if vim.fn.executable("/usr/libexec/java_home") == 0 then
+              return nil
+            end
+            local result = vim.system({ "/usr/libexec/java_home", "-F", "-v", "19" }, { text = true }):wait()
+            local home = result.code == 0 and vim.trim(result.stdout) or ""
+            if home ~= "" and vim.fn.executable(home .. "/bin/java") == 1 then
               return { JAVA_HOME = home, PATH = home .. "/bin:" .. vim.env.PATH }
             end
           end)(),
